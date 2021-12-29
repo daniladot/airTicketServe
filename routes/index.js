@@ -55,6 +55,8 @@ const createEndpoints = async () => {
                     ||
                     req.query.sortPrice === 'true' && {price: 1}
                     ||
+                    req.query.sortPrice === 'false' && {price: -1}
+                    ||
                     {}
 
 
