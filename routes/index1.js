@@ -45,26 +45,24 @@ const createEndpoints = async () => {
             // if (req.query.forwardAirline && req.query.sortDuration === 'true') {
             response = await tickets
                 .find(
-                    (req.query.minPrice || req.query.maxPrice)
-                        ? {$and: [{price: {$gte: +req.query.minPrice || 0}}, {price: {$lte: +req.query.maxPrice || 10000000}}]}
-                        : {}
+                    req.query.backAirline ? {$and: [{"backTicket.airline": req.query.backAirline}, {price: {$gte: req.query.minPrice}}]}
+                        :
+                        req.query.forwardAirline ? {$and: [{"forwardTicket.airline": req.query.forwardAirline}, {price: {$gte: req.query.minPrice}}]}
+                            :
+                            (req.query.minPrice || req.query.maxPrice) ? {$and: [{price: {$gte: +req.query.minPrice || 0}}, {price: {$lte: +req.query.maxPrice || 10000000}}]}
+                                : {}
                 )
                 .limit(req.query.limit ? +req.query.limit : 0)
                 .sort(
                     req.query.sortForwardDuration === 'true' && {"forwardTicket.totalDuration": 1}
                     ||
-                    req.query.sortPrice === 'true' && {price: 1}
+                    req.query.sortForwardDuration === 'false' && {"backTicket.totalDuration": -1}
+                    ||
+                    req.query.sortBackDuration === 'true' && {"backTicket.totalDuration": 1}
+                    ||
+                    req.query.sortBackDuration === 'false' && {"backTicket.totalDuration": -1}
                     ||
                     {}
-
-
-                    // req.query.sortForwardDuration === 'false' && {"backTicket.totalDuration": -1}
-                    // ||
-                    // req.query.sortBackDuration === 'true' && {"backTicket.totalDuration": 1}
-                    // ||
-                    // req.query.sortBackDuration === 'false' && {"backTicket.totalDuration": -1}
-                    // ||
-                    // {}
                 )
                 .toArray()
             // } else if (req.query.forwardAirline) {
