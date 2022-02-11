@@ -46,7 +46,7 @@ const createEndpoints = async () => {
             response = await tickets
                 .find(
                     (req.query.minPrice || req.query.maxPrice || req.query.transfer)
-                        ? {$and: [{price: {$gte: +req.query.minPrice || 0}}, {price: {$lte: +req.query.maxPrice || 10000000}}, {"forwardTicket.transfer": req.query.transfer == 0 ? {$eq: 0} : {$lte: 1}}]}
+                        ? {$and: [{price: {$gte: +req.query.minPrice || 0}}, {price: {$lte: +req.query.maxPrice || 10000000}}, {"forwardTicket.transfer": req.query.transfer == 'true' ? {$eq: 0} : {$lte: 1}}]}
                         : {}
                 )
                 // .find(
