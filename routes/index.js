@@ -45,10 +45,15 @@ const createEndpoints = async () => {
             // if (req.query.forwardAirline && req.query.sortDuration === 'true') {
             response = await tickets
                 .find(
-                    (req.query.minPrice || req.query.maxPrice)
-                        ? {$and: [{price: {$gte: +req.query.minPrice || 0}}, {price: {$lte: +req.query.maxPrice || 10000000}}]}
+                    (req.query.minPrice || req.query.maxPrice || req.query.transfer)
+                        ? {$and: [{price: {$gte: +req.query.minPrice || 0}}, {price: {$lte: +req.query.maxPrice || 10000000}}, {"forwardTicket.transfer": req.query.transfer == 0 ? {$eq: 0} : {$lte: 1}}]}
                         : {}
                 )
+                // .find(
+                //     (req.query.transfer)
+                //         ? {"forwardTicket.transfer":{$eq:req.query.transfer == 0 && 0}}
+                //         : {}
+                // )
                 .limit(req.query.limit ? +req.query.limit : 0)
                 .sort(
                     req.query.sortForwardDuration === 'true' && {"forwardTicket.totalDuration": 1}
@@ -69,6 +74,12 @@ const createEndpoints = async () => {
                     // {}
                 )
                 .toArray()
+
+
+
+
+            // db.student.find({}, {roll:1, _id:0})
+
             // } else if (req.query.forwardAirline) {
             //     response = await tickets.find(req.query.forwardAirline && {"forwardTicket.airline": req.query.forwardAirline})
             //         .limit(req.query.limit ? +req.query.limit : 0)
@@ -114,6 +125,19 @@ const createEndpoints = async () => {
             //         })
             //         response = [...newArr]
             //     }
+            // console.log(response)
+            if (req.query.company === 'true') {
+                const arr = []
+                response.forEach(elem => {
+                    arr.push(elem.forwardTicket.airline)
+                })
+
+                let arr_2 = arr.filter((item, index) => {
+                    return arr.indexOf(item) === index
+                });
+                res.json(arr_2);
+
+            }
             res.json(response);
         }
     )
