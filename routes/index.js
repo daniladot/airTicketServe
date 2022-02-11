@@ -137,8 +137,9 @@ const createEndpoints = async () => {
                 });
                 res.json(arr_2);
 
+            } else{
+                res.json(response);
             }
-            res.json(response);
         }
     )
 //
